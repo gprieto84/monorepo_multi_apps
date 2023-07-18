@@ -45,8 +45,8 @@ jobs:
         uses: ./.github/actions/get-affected-fetch
 
       - name: Linting
-        run: npx nx affected -t lint --base=${{ github.ref_name }} --parallel
+        run: npx nx affected -t lint --base=origin/${{ github.ref_name }} --parallel
 
 
       - name: Build Backend Services
-        run: npx nx affected -t build --base=${{ github.ref_name }} --parallel
+        run: npx nx affected -t build --base=origin/${{ github.ref_name }} --parallel
