@@ -1,0 +1,47 @@
+name: Setup Node
+description: 'Setup Node and Yarn'
+inputs:
+  node-version:
+    required: true
+    description: Node Version
+    default: '16'
+  install-yarn:
+    description: Install Yarn (True/False)
+    required: true
+    default: 'true'
+  setup-cache:
+    description: Setup Cache (True/False)
+    required: true
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    - name: Set up NodeJS
+      uses: actions/setup-node@v3
+      with:
+        node-version: '${{ inputs.node-version }}'
+    - name: Install yarn
+      if: "${{ inputs.install-yarn == 'true' }}"
+      run: npm i -g yarn
+      shell: bash
+
+    - name: Get yarn cache directory path
+      if: "${{ inputs.setup-cache == 'true' }}"
+      id: yarn-cache-dir-path
+      run: |
+        echo "::set-output name=dir::$(yarn cache dir)"
+        echo "::set-output name=version::$(yarn -v)"
+      shell: bash
+
+    - name: Cache node_modules
+      if: "${{ inputs.setup-cache == 'true' }}"
+      id: cache-node-modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          **/node_modules
+          **/.eslintcache
+          ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: "${{ runner.os }}-nodemodules-${{ hashFiles('./yarn.lock') }}"
+        restore-keys: |
+          ${{ runner.os }}-nodemodules-
