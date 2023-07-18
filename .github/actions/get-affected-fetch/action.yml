@@ -11,6 +11,6 @@ runs:
       env:
         BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
       run: |
-        git fetch origin ${BRANCH_NAME} --unshallow --filter=tree:0
+        git fetch origin ${BRANCH_NAME} --filter=tree:0
         echo ${BRANCH_NAME}
 
