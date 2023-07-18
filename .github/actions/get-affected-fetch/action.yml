@@ -1,0 +1,16 @@
+description: "Downloads PR branch's commit messages and sets the remote to promisor to lazy-load commits when a diff is requested."
+name: 'Download additional commits for NX'
+runs:
+  using: 'composite'
+  steps:
+    - name: Set remote as promisor
+      shell: bash
+      run: git config remote.origin.promisor true
+    - name: Download current branch's parent commits (without blobs and trees)
+      shell: bash
+      env:
+        BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+      run: |
+        git fetch origin ${BRANCH_NAME} --unshallow --filter=tree:0
+        echo ${BRANCH_NAME}
+

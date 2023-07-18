@@ -41,28 +41,12 @@ jobs:
           Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v3
 
+      - name: Fetch commits for nx affected
+        uses: ./.github/actions/get-affected-fetch
+
       - name: Linting
         run: npx nx affected -t lint --base=origin/${{ github.ref_name }} --parallel
 
+
       - name: Build Backend Services
         run: npx nx affected -t build --base=origin/${{ github.ref_name }} --parallel
-
-      # - name: GitHub OIDC Auth to assume AWS Role
-      #   uses: aws-actions/configure-aws-credentials@v2
-      #   with:
-      #     role-to-assume:
-      #       arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/${{vars.AWS_ROLE }}
-      #     role-session-name: github-action-terraform
-      #     aws-region: ${{ vars.AWS_REGION }}
-      #     audience: sts.amazonaws.com
-
-      # - name: Login to Amazon ECR
-      #   id: login-aws-ecr
-      #   uses: aws-actions/amazon-ecr-login@v1
-
-      # - name: Build and push the affected services docker image to Amazon ECR
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-aws-ecr.outputs.registry }}
-      #     IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
-      #   run: |
-      #     npx nx affected -t deploy --base=origin/${{ github.ref_name }} --exclude=emr-app,infra-eks,infra-dynamo-db,infra-ecr --tag=$IMAGE_TAG --registry=$ECR_REGISTRY --configuration=dev --parallel
